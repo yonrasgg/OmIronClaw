@@ -4,5 +4,5 @@ contact_links:
     url: https://github.com/OWNER/REPO/security/advisories/new
     about: Report vulnerabilities privately using GitHub Security Advisories. Do not post exploit details in public issues.
   - name: Security Policy
-    url: https://github.com/OWNER/REPO/blob/main/SECURITY.md
+    url: https://github.com/yonrasgg/OmIronClaw/blob/main/SECURITY.md
     about: Read disclosure scope and handling expectations before reporting.

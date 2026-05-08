@@ -1,6 +1,9 @@
 # OmIronClaw
 
-Universal Debian 13 AI hardening template for bare-metal and VPS deployments.
+Open-source self-hosted AI hardening template for Debian 13 on bare-metal and VPS.
+
+OmIronClaw helps you deploy Ollama and OpenClaw with security-first defaults, clear runbooks, and reproducible workflows.
+If you are building a local AI server, hardened home lab, or open-source AI infrastructure baseline, this project is designed for you.
 
 ![OmIronClaw Mascots](assets/ollama+openclaw.png)
 
@@ -8,11 +11,25 @@ Universal Debian 13 AI hardening template for bare-metal and VPS deployments.
 
 OmIronClaw provides a production-minded baseline for:
 
-- Zero-trust network posture
-- SSH-first secure access model
-- Local AI with Ollama REST
+- Secure-by-default self-hosted AI operations
+- SSH-first access to reduce lockout and exposure risk
+- Local AI workflows with Ollama REST
 - Optional OpenClaw orchestration for local, cloud, or hybrid routing
-- Public-template OPSEC controls before Git publishing
+- Open-source publication safety with built-in OPSEC checks
+
+## Who Is This For
+
+- Engineers who want a faster path to a hardened self-hosted AI stack
+- Technical founders who need private AI infrastructure without enterprise complexity
+- Home lab operators who value repeatable scripts and practical security controls
+- Open-source contributors who want a clean, auditable release workflow
+
+## What You Get
+
+- Interactive initialization for environment-safe outputs
+- Security templates and staged hardening scripts for Debian 13
+- AI stack setup path for Ollama and OpenClaw
+- Wiki-first documentation for deeper implementation details
 
 ## Interactive Bootstrap
 
@@ -48,9 +65,12 @@ sudo bash scripts/20-phase2-service-optimization.sh
 sudo bash scripts/30-phase3-ai-stack.sh
 ```
 
+This path is intentionally opinionated: audit first, foundation hardening second, service minimization third, AI stack integration last.
+
 ## Documentation Hub
 
-The wiki is the primary source of operational documentation.
+The wiki is the primary source of operational and technical documentation.
+README stays focused on clarity and onboarding, while wiki pages go deeper into architecture, standards, and runbooks.
 
 Start here:
 
@@ -73,6 +93,8 @@ This wrapper verifies:
 - Sanitization leakage patterns
 - Secret-like files in the tree
 - Required release files for governance and security
+
+This keeps the repository publish-ready for open-source collaboration without leaking private infrastructure details.
 
 ## Repository Structure
 
