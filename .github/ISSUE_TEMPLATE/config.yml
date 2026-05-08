@@ -1,7 +1,7 @@
 blank_issues_enabled: false
 contact_links:
   - name: Private Security Disclosure
-    url: https://github.com/OWNER/REPO/security/advisories/new
+    url: https://github.com/yonrasgg/OmIronClaw/security/advisories/new
     about: Report vulnerabilities privately using GitHub Security Advisories. Do not post exploit details in public issues.
   - name: Security Policy
     url: https://github.com/yonrasgg/OmIronClaw/blob/main/SECURITY.md
