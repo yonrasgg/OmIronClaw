@@ -1,0 +1,58 @@
+## Debian 13 AI Server Template — Audit Rules (CIS 4.1 / NIST AU-2)
+## Deployed: 2026-04-17 audit remediation F9
+
+# Delete all existing rules
+-D
+
+# Buffer size
+-b 8192
+
+# Failure mode: 1=printk, 2=panic
+-f 1
+
+# --- Identity changes (CIS 4.1.1) ---
+-w /etc/group -p wa -k identity
+-w /etc/passwd -p wa -k identity
+-w /etc/gshadow -p wa -k identity
+-w /etc/shadow -p wa -k identity
+-w /etc/security/opasswd -p wa -k identity
+
+# --- Login/logout (CIS 4.1.8) ---
+-w /var/log/faillog -p wa -k logins
+-w /var/log/lastlog -p wa -k logins
+-w /var/log/wtmp -p wa -k logins
+-w /var/log/btmp -p wa -k logins
+
+# --- Session initiation (CIS 4.1.9) ---
+-w /var/run/utmp -p wa -k session
+
+# --- Sudo usage (CIS 4.1.15) ---
+-w /etc/sudoers -p wa -k sudoers
+-w /etc/sudoers.d/ -p wa -k sudoers
+-w /var/log/sudo.log -p wa -k sudoaction
+
+# --- SSH config changes ---
+-w /etc/ssh/sshd_config -p wa -k sshd_config
+-w /etc/ssh/sshd_config.d/ -p wa -k sshd_config
+
+# --- Firewall changes ---
+-w /etc/nftables.conf -p wa -k firewall
+-w /etc/nftables.d/ -p wa -k firewall
+
+# --- Kernel module loading (CIS 4.1.17) ---
+-w /sbin/insmod -p x -k modules
+-w /sbin/rmmod -p x -k modules
+-w /sbin/modprobe -p x -k modules
+
+# --- Time changes (CIS 4.1.3) ---
+-w /etc/localtime -p wa -k time-change
+
+# --- AppArmor changes ---
+-w /etc/apparmor/ -p wa -k apparmor
+-w /etc/apparmor.d/ -p wa -k apparmor
+
+# --- Ollama data directory ---
+-w /srv/ollama -p wa -k ollama_data
+
+# Make config immutable (must be last)
+-e 2

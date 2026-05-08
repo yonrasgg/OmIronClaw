@@ -1,0 +1,22 @@
+# Phase 6 — Weekly Health Monitor Service
+# Runs 60-health-monitor.sh and saves output to /var/log/health-monitor/
+#
+# Deploy:
+#   sudo cp <this-file> /etc/systemd/system/health-monitor.service
+#   sudo systemctl daemon-reload
+#
+# Phase 6 — T6.5 — 2026-04-17
+
+[Unit]
+Description=Weekly Health Monitor Check
+Documentation=file:///home/${SSH_USER}/OmIronClaw/scripts/60-health-monitor.sh
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStartPre=/bin/mkdir -p /var/log/health-monitor
+ExecStart=/bin/bash -c '/home/${SSH_USER}/OmIronClaw/scripts/60-health-monitor.sh > /var/log/health-monitor/health-$(date +%%Y%%m%%d_%%H%%M%%S).log 2>&1; exit 0'
+User=root
+
+# Hardening (minimal — script reads many system paths)
+PrivateTmp=yes

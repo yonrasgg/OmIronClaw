@@ -1,0 +1,64 @@
+name: Feature Request
+description: Propose an improvement with clear operational value and constraints.
+title: "[Feature]: "
+labels:
+  - enhancement
+  - triage
+body:
+  - type: input
+    id: objective
+    attributes:
+      label: Objective
+      description: What concrete outcome should this feature enable?
+      placeholder: "Add an idempotent rollback helper for firewall deployment"
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What gap exists today?
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed Solution
+      description: Include technical approach, affected paths, and expected behavior.
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Other options considered and why they were rejected.
+      render: markdown
+
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Expected Impact
+      options:
+        - Reliability
+        - Security Hardening
+        - Usability
+        - Performance
+        - Documentation Quality
+        - Developer Experience
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: governance
+    attributes:
+      label: Governance Checklist
+      options:
+        - label: This request does not require exposing private infrastructure data.
+          required: true
+        - label: I identified where wiki/runbooks or standards should be updated.
+          required: true

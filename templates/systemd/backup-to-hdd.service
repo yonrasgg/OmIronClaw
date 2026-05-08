@@ -1,0 +1,22 @@
+[Unit]
+Description=Weekly SD to HDD Backup
+Documentation=wiki/phases/phase-10-storage/README.md
+ConditionPathIsMountPoint=/mnt/data
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/omironclaw-backup.sh
+User=root
+Nice=19
+IOSchedulingClass=idle
+
+# Sandboxing
+ProtectSystem=full
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=multi-user.target

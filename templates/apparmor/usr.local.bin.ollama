@@ -1,0 +1,67 @@
+# AppArmor profile for Ollama AI Inference Service
+# CIS Debian 13: 1.6.1.3 — Ensure all AppArmor profiles are in enforce or complain mode
+# NIST SP 800-53: AC-6, SC-7, SA-8
+#
+# Deploy: sudo cp <this-file> /etc/apparmor.d/usr.local.bin.ollama
+# Complain: sudo aa-complain /etc/apparmor.d/usr.local.bin.ollama
+# Enforce:  sudo aa-enforce  /etc/apparmor.d/usr.local.bin.ollama
+# Reload:   sudo apparmor_parser -r /etc/apparmor.d/usr.local.bin.ollama
+#
+# Phase 2 — T2.18 — 2026-04-17
+
+abi <abi/4.0>,
+
+include <tunables/global>
+
+profile ollama /usr/local/bin/ollama flags=(enforce) {
+  include <abstractions/base>
+  include <abstractions/nameservice>
+
+  # ── Binary ──
+  /usr/local/bin/ollama          mrix,
+
+  # ── Shared libraries ──
+  /usr/lib/aarch64-linux-gnu/**  mr,
+
+  # ── Data directory (HOME=/srv/ollama) ──
+  /srv/ollama/                   r,
+  /srv/ollama/**                 rwkl,
+
+  # ── Temporary files (systemd PrivateTmp) ──
+  /tmp/                          r,
+  /tmp/**                        rwk,
+
+  # ── Proc / Sys reads (runtime introspection) ──
+  @{PROC}/@{pid}/status          r,
+  @{PROC}/@{pid}/maps            r,
+  @{PROC}/@{pid}/cmdline         r,
+  @{PROC}/sys/net/**             r,
+  @{PROC}/meminfo                r,
+  @{PROC}/cpuinfo                r,
+  @{PROC}/stat                   r,
+  /sys/devices/system/cpu/**     r,
+  /sys/fs/cgroup/**              r,
+
+  # ── DNS resolution ──
+  /etc/resolv.conf               r,
+  /etc/hosts                     r,
+  /etc/nsswitch.conf             r,
+  /run/systemd/resolve/**        r,
+
+  # ── Logging (journal via systemd) ──
+  /run/systemd/journal/socket    w,
+  /run/systemd/journal/stdout    w,
+
+  # ── Network: TCP listen on 11434, outbound for model downloads ──
+  network inet  stream,
+  network inet6 stream,
+  network inet  dgram,
+  network inet6 dgram,
+  network unix  stream,
+
+  # ── Deny everything else ──
+  deny /etc/shadow               r,
+  deny /etc/gshadow              r,
+  deny /root/**                  rwx,
+  deny /home/**                  rwx,
+}

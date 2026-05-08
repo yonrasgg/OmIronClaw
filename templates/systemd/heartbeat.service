@@ -1,0 +1,31 @@
+[Unit]
+Description=OmIronClaw heartbeat - Markdown/YAML telemetry snapshot into Vault
+After=network-online.target ollama.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=openclawsvc
+Group=aidata
+UMask=0027
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+Environment=DATA_MOUNT=/mnt/data
+Environment=VAULT_ROOT=/mnt/data/ai-data/documents/HOME_LAB
+ExecStart=/usr/local/sbin/omironclaw-heartbeat.sh
+
+# Hardening (read-only diagnostic task)
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/mnt/data/ai-data/documents
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictNamespaces=yes
+RestrictRealtime=yes
+LockPersonality=yes
+SystemCallArchitectures=native

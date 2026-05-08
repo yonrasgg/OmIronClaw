@@ -1,0 +1,101 @@
+name: Bug Report
+description: Report a reproducible defect with clear impact and evidence.
+title: "[Bug]: "
+labels:
+  - bug
+  - triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting.
+
+        If this is a security issue, do not open a public issue.
+        Use private disclosure through GitHub Security Advisories as described in SECURITY.md.
+
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      description: One-line description of the defect.
+      placeholder: "Service hardening script fails when applying nftables template"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: Choose the observed impact severity.
+      options:
+        - Low
+        - Medium
+        - High
+        - Critical
+    validations:
+      required: true
+
+  - type: input
+    id: scope
+    attributes:
+      label: Affected Scope
+      description: File paths, scripts, or templates affected.
+      placeholder: "scripts/20-phase2-service-optimization.sh, templates/nftables.conf"
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction Steps
+      description: Deterministic steps to reproduce.
+      placeholder: |
+        1. Run command X
+        2. Apply template Y
+        3. Observe failure Z
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What should have happened.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened, including exact error text.
+    validations:
+      required: true
+
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation Evidence
+      description: Commands and sanitized output proving the issue.
+      placeholder: |
+        Command:
+        bash scripts/01-prepublish-check.sh
+
+        Output:
+        ...
+      render: markdown
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Reporter Checklist
+      options:
+        - label: I removed secrets, private IPs, and personal identifiers from this report.
+          required: true
+        - label: I verified this issue is reproducible on the latest repository state.
+          required: true
+        - label: I checked that this is not already tracked in existing issues.
+          required: true

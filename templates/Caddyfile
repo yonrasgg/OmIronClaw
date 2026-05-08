@@ -1,0 +1,128 @@
+# Debian 13 AI Server Template — Caddy Reverse Proxy for Ollama
+# Phase 3: API Gateway with TLS, auth, rate limiting, model routing
+# NIST SC-8 (TLS) / AC-3 (Access Control) / SC-7 (Boundary Protection)
+#
+# Deploy:
+#   sudo cp Caddyfile /etc/caddy/Caddyfile
+#   sudo caddy validate --config /etc/caddy/Caddyfile
+#   sudo systemctl reload caddy
+#
+# Test:
+#   curl -sk https://${PI_IP}/api/version -H "X-API-Key: ${OLLAMA_API_KEY}"
+
+# --- Global options ---
+{
+	# Route all connections through the TLS 1.3 policy (prevents fallback to TLS 1.2)
+	default_sni ${PI_IP}
+
+	# Security headers
+	servers {
+		protocols h1 h2
+	}
+
+	# Logging
+	log {
+		output file /var/log/caddy/access.log {
+			roll_size 10mb
+			roll_keep 5
+		}
+		format json
+	}
+}
+
+# --- API Gateway ---
+https://${PI_IP} {
+	# TLS with Caddy's internal CA (self-signed for LAN)
+	# Phase 5: Pin TLS 1.3 minimum — NIST SC-8
+	tls internal {
+		protocols tls1.3
+	}
+
+	# Note: rate limiting requires caddy-rate-limit plugin (not in stock build)
+	# Enforced at nftables layer instead (connlimit + hashlimit)
+
+	# Security headers on all responses
+	header {
+		-Server
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "no-referrer"
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+	}
+
+	# API key authentication — reject early if missing/wrong key
+	@not_authenticated {
+		not header X-API-Key ${OLLAMA_API_KEY}
+	}
+
+	# Health endpoint (no auth required)
+	handle /health {
+		respond "OK" 200
+	}
+
+	# Ollama version (no auth, useful for connectivity checks)
+	handle /api/version {
+		reverse_proxy 127.0.0.1:11434
+	}
+
+	# Main Ollama API (authenticated)
+	handle /api/* {
+		respond @not_authenticated "Unauthorized" 401
+		reverse_proxy 127.0.0.1:11434
+	}
+
+	# OpenAI-compatible endpoint (authenticated)
+	handle /v1/* {
+		respond @not_authenticated "Unauthorized" 401
+		reverse_proxy 127.0.0.1:11434
+	}
+
+	# --- OpenClaw Gateway (Phase 9) ---
+	# Force trailing slash for the Control UI document so relative assets
+	# (`./assets/*`) resolve under /openclaw/ instead of /assets.
+	@openclaw_doc {
+		path /openclaw
+		not header Connection *Upgrade*
+	}
+	redir @openclaw_doc /openclaw/ 308
+
+	# Exact WebSocket URL used by the dashboard (`/openclaw` without trailing slash).
+	@openclaw_ws {
+		path /openclaw
+		header Connection *Upgrade*
+		header Upgrade websocket
+	}
+	handle @openclaw_ws {
+		rewrite * /
+		reverse_proxy 127.0.0.1:18789
+	}
+
+	# Health check (no auth)
+	handle /openclaw/health {
+		uri strip_prefix /openclaw
+		reverse_proxy 127.0.0.1:18789
+	}
+
+	# OpenClaw API + WebSocket (auth via OpenClaw gateway token)
+	handle /openclaw/* {
+		uri strip_prefix /openclaw
+		reverse_proxy 127.0.0.1:18789
+	}
+
+	# --- SecOps Webhooks (Phase 5/6) ---
+	# Inbound channel for medium/high SecOps alerts from LAN hosts (Snort3, Fail2ban).
+	# Auth: OpenClaw gateway validates X-OpenClaw-Token at the application layer.
+	# Caddy provides TLS termination only; no extra auth here to avoid double-token confusion.
+	# NIST: AU-6 (Audit Review), IR-4 (Incident Handling), SC-8 (TLS).
+	handle /webhooks/* {
+		# Source IP allowlist enforced at nftables (input chain) — Caddy stays simple.
+		reverse_proxy 127.0.0.1:18789 {
+			header_up X-Forwarded-Source {remote_host}
+		}
+	}
+
+	# Block everything else
+	handle {
+		respond "Not Found" 404
+	}
+}

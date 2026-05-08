@@ -1,0 +1,13 @@
+#
+# /etc/pam.d/common-account - authorization settings common to all services
+# Modified: 2026-04-17 — added pam_faillock (CIS 5.4.2 / NIST AC-7)
+#
+
+# Faillock account check
+account required                        pam_faillock.so
+# Primary
+account [success=1 new_authtok_reqd=done default=ignore]        pam_unix.so
+# Fallback deny
+account requisite                       pam_deny.so
+# Success
+account required                        pam_permit.so

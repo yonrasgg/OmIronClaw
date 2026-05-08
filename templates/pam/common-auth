@@ -1,0 +1,15 @@
+#
+# /etc/pam.d/common-auth - authentication settings common to all services
+# Modified: 2026-04-17 — added pam_faillock (CIS 5.4.2 / NIST AC-7)
+#
+
+# Faillock preauth — count failures
+auth    required                        pam_faillock.so preauth
+# Primary auth
+auth    [success=1 default=ignore]      pam_unix.so nullok
+# Fallback deny
+auth    requisite                       pam_deny.so
+# Faillock authfail — record failed attempts
+auth    [default=die]                   pam_faillock.so authfail
+# Success
+auth    required                        pam_permit.so

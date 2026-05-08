@@ -1,0 +1,35 @@
+# Environment files with real values
+.env
+*.env
+!.env.example
+
+# Runtime artifacts
+logs/
+loot/
+ci/runs/**
+!ci/runs/.gitkeep
+build/
+
+# Editor / IDE
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Backup files from edits
+*.bak
+*.orig
+*.DISABLED
+.api-key
+wiki/evidence/**/*.txt
+
+# Local secrets and machine-specific overrides
+*.secret
+*.local
+*.key
+*.pem
+*.p12

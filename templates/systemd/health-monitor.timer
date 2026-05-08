@@ -1,0 +1,23 @@
+# Phase 6 — Weekly Health Monitor Timer
+# Triggers health-monitor.service every Sunday at 06:00
+#
+# Deploy:
+#   sudo cp <this-file> /etc/systemd/system/health-monitor.timer
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now health-monitor.timer
+#
+# Verify:
+#   systemctl list-timers health-monitor.timer
+#
+# Phase 6 — T6.5 — 2026-04-17
+
+[Unit]
+Description=Weekly Health Monitor Timer
+
+[Timer]
+OnCalendar=Sun *-*-* 06:00:00
+Persistent=true
+RandomizedDelaySec=300
+
+[Install]
+WantedBy=timers.target

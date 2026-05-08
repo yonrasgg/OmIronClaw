@@ -1,0 +1,40 @@
+---
+- name: OmIronClaw localhost baseline checks
+  hosts: localhost
+  gather_facts: true
+  become: false
+
+  tasks:
+    - name: Print host summary
+      ansible.builtin.debug:
+        msg:
+          - "hostname={{ ansible_hostname }}"
+          - "distribution={{ ansible_distribution }} {{ ansible_distribution_version }}"
+          - "kernel={{ ansible_kernel }}"
+          - "arch={{ ansible_architecture }}"
+
+    - name: Check core binaries are available
+      ansible.builtin.command: "{{ item }} --version"
+      loop:
+        - ssh
+        - nft
+        - systemctl
+      changed_when: false
+      failed_when: false
+
+    - name: Verify ollama endpoint locally when service exists
+      ansible.builtin.shell: |
+        if systemctl is-active --quiet ollama; then
+          curl -fsS --max-time 3 http://127.0.0.1:11434/api/version >/dev/null
+          echo "ollama=reachable"
+        else
+          echo "ollama=inactive"
+        fi
+      args:
+        executable: /bin/bash
+      register: ollama_health
+      changed_when: false
+
+    - name: Show ollama health result
+      ansible.builtin.debug:
+        var: ollama_health.stdout
